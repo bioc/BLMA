@@ -14,20 +14,20 @@ test_BilevelAnalysisClassic <- function() {
 }
 
 test_IntraAnalysisGene <- function() {
-    data(GSE14924_CD4)
-    data = data_GSE14924_CD4
-    group=group_GSE14924_CD4
+    data(GSE17054)
+    data = data_GSE17054
+    group=group_GSE17054
     X = IntraAnalysisGene(data, group)
     checkEquals(rownames(data),rownames(X))
 }
 
 test_BilevelAnalysisGene <- function() {
-    data(GSE14924_CD4)
-    data = data_GSE14924_CD4
-    group=group_GSE14924_CD4
+    data(GSE17054)
+    data = data_GSE17054
+    group=group_GSE17054
     dataList=list(data)
     groupList=list(group)
-    names(dataList)=names(groupList)="GSE14924_CD4"
+    names(dataList)=names(groupList)="GSE17054"
     a=IntraAnalysisGene(data, group)
     a=a[order(a$pIntra),]
     b=BilevelAnalysisGene(dataList = dataList, groupList = groupList)

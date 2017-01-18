@@ -35,6 +35,7 @@
 #' x=runif(10)
 #' fishersMethod(x)
 #' 
+#' @import stats
 #' @export 
 fishersMethod = function(x) {
     if(sum(is.na(x))>0) NA
@@ -52,8 +53,8 @@ fishersMethod = function(x) {
 #' 
 #' Considering a set of \emph{m} independent significance tests, the resulted 
 #' p-values are independent and uniformly distributed between \emph{0} and 
-#' \emph{1} under the null hypothesis. Stouffer’s method is similar to 
-#' Fisher’s method (\link{fishersMethod}), with the difference is that it 
+#' \emph{1} under the null hypothesis. Stouffer's method is similar to 
+#' Fisher's method (\link{fishersMethod}), with the difference is that it 
 #' uses the sum of p-values transformed into standard normal variables 
 #' instead of the log product.
 #' 
@@ -81,6 +82,7 @@ fishersMethod = function(x) {
 #' x=runif(10)
 #' stoufferMethod(x)
 #' 
+#' @import stats
 #' @export 
 stoufferMethod = function(x) {
     if(sum(is.na(x))>0) NA
@@ -103,8 +105,9 @@ IrwinHallCumulative = function(x) {
                 function(k) (-1)^k * choose(n,k) * (s-k)^(n)))
 }
 
-#x is a vector of p-values
+
 additiveMethod = function(x) {
+    #x is a vector of p-values
     n = length(x)
     if (n <= 20) {
         IrwinHallCumulative(x)
@@ -158,11 +161,11 @@ averageCumulative = function(x) {
 #' 
 #' [1a] P. Hall. The distribution of means for samples of size n drawn from a 
 #' population in which the variate takes values between 0 and 1, all such 
-#' values being equally probable. Biometrika, 19(3-4):240–244, 1927.
+#' values being equally probable. Biometrika, 19(3-4):240-244, 1927.
 #' 
 #' [1b] J. O. Irwin. On the frequency distribution of the means of samples 
 #' from a population having any law of frequency with finite moments, with 
-#' special reference to Pearson’s Type II. Biometrika, 19(3-4):225–239, 1927.
+#' special reference to Pearson's Type II. Biometrika, 19(3-4):225-239, 1927.
 #' 
 #' [2] T. Nguyen, R. Tagett, M. Donato, C. Mitrea, and S. Draghici. A novel 
 #' bi-level meta-analysis approach -- applied to biological pathway analysis. 
@@ -179,7 +182,7 @@ averageCumulative = function(x) {
 #' [5] T. Nguyen, D. Diaz, and S. Draghici. TOMAS: A novel TOpology-aware 
 #' Meta-Analysis approach applied to System biology. In Proceedings of the 
 #' 7th ACM International Conference on Bioin- formatics, Computational Biology, 
-#' and Health Informatics, pages 13–22. ACM, 2016.
+#' and Health Informatics, pages 13-22. ACM, 2016.
 #' 
 #' @seealso \code{\link{fishersMethod}}, \code{\link{stoufferMethod}}
 #' 
@@ -191,6 +194,7 @@ averageCumulative = function(x) {
 #' x=runif(10)
 #' addCLT(x)
 #' 
+#' @import stats
 #' @export 
 addCLT = function(x) {
     if(sum(is.na(x))>0) NA

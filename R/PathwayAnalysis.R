@@ -37,6 +37,7 @@ loadKEGGPathways = function (organism="hsa", updateCache=FALSE) {
     list(kpg=kpg, kpn=kpn)
 }
 
+#' @import stats
 pORACalc=function(geneSet, DEGenes,measuredGenes, minSize =0) {
     #minSize is the minimum number of DE genes in the geneSet
     universe=measuredGenes
@@ -79,7 +80,7 @@ pORACalc=function(geneSet, DEGenes,measuredGenes, minSize =0) {
 #' method is "ORA". By default percent=0.05 (five percent). Please note that 
 #' only genes with p-value less than pCutoff will be considered
 #' @param nboot number of bootstrap iterations. By default, nboot=200
-#' @param random.seed seed. By default, random.seed=1.
+#' @param seed seed. By default, seed=1.
 #' @param mc.cores the number of cores to be used in parallel computing. 
 #' By default, mc.cores=1
 #' 
@@ -114,11 +115,11 @@ pORACalc=function(geneSet, DEGenes,measuredGenes, minSize =0) {
 #' 
 #' [2] A. L. Tarca, S. Draghici, P. Khatri, S. S. Hassan, P. Mittal, 
 #' J.-s. Kim, C. J. Kim, J. P. Kusanovic, and R. Romero. A novel signaling 
-#' pathway impact analysis. Bioinformatics, 25(1):75–82, 2009.
+#' pathway impact analysis. Bioinformatics, 25(1):75-82, 2009.
 #' 
 #' [3] S. Draghici, P. Khatri, A. L. Tarca, K. Amin, A. Done, C. Voichita, 
 #' C. Georgescu, and R. Romero. A systems biology approach for pathway 
-#' level analysis. Genome Research, 17(10):1537–1545, 2007.
+#' level analysis. Genome Research, 17(10):1537-1545, 2007.
 #' 
 #' [4] R. A. Fisher. Statistical methods for research workers. 
 #' Oliver & Boyd, Edinburgh, 1925.
@@ -139,7 +140,7 @@ pORACalc=function(geneSet, DEGenes,measuredGenes, minSize =0) {
 #' x=loadKEGGPathways()  
 #' 
 #' # load example data
-#' dataSets=c("GSE14924_CD4", "GSE17054", "GSE57194", "GSE33223", "GSE42140", "GSE8023")
+#' dataSets=c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
 #' data(list=dataSets, package="BLMA")
 #' dataList <- list()
 #' groupList <- list()
@@ -153,10 +154,16 @@ pORACalc=function(geneSet, DEGenes,measuredGenes, minSize =0) {
 #' names(dataList)=names(groupList)=dataSets
 #' 
 #' IAComb=BilevelAnalysisPathway(kpg = x$kpg, kpn = x$kpn, dataList = dataList, 
-#' groupList = groupList, mc.cores = 3)
-#' View(IAComb)
+#' groupList = groupList, mc.cores = 1)
+#' IAComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
+#' 
 #' @import ROntoTools 
 #' @import graph
+#' @import limma
+#' @import parallel
+#' @import Biobase
+#' @import utils
+#' @import stats
 #' @export
 BilevelAnalysisPathway <- function (kpg, kpn, dataList, groupList, splitSize=5, metaMethod=addCLT, pCutoff=0.05, percent=0.05, mc.cores=1, nboot=200, seed=1) {
     if (splitSize < 3) {
@@ -313,7 +320,7 @@ BilevelAnalysisPathway <- function (kpg, kpn, dataList, groupList, splitSize=5, 
 #' Genomics, 81(2):98-104, 2003.
 #' 
 #' [3] B. Efron and R. Tibshirani. On testing the significance of sets of 
-#' genes. The Annals of Applied Statistics, 1(1):107–129, 2007.
+#' genes. The Annals of Applied Statistics, 1(1):107-129, 2007.
 #' 
 #' [4] A. L. Tarca, S. Draghici, G. Bhatti, and R. Romero. Down-weighting 
 #' overlapping genes improves gene set analysis. 
@@ -339,7 +346,7 @@ BilevelAnalysisPathway <- function (kpg, kpn, dataList, groupList, splitSize=5, 
 #' gs.names=x$kpn[names(gslist)]
 #' 
 #' # load example data
-#' dataSets=c("GSE14924_CD4", "GSE17054", "GSE57194", "GSE33223", "GSE42140", "GSE8023")
+#' dataSets=c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
 #' data(list=dataSets, package="BLMA")
 #' dataList <- list()
 #' groupList <- list()
@@ -355,23 +362,27 @@ BilevelAnalysisPathway <- function (kpg, kpn, dataList, groupList, splitSize=5, 
 #' # perform bi-level meta-analysis in conjunction with ORA
 #' ORAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
 #' dataList = dataList, groupList = groupList, enrichment = "ORA")
-#' View(ORAComb)
+#' ORAComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
 #' 
 #' # perform bi-level meta-analysis in conjunction with GSA
 #' GSAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-#' dataList = dataList, groupList = groupList, enrichment = "GSA", mc.cores=3, 
+#' dataList = dataList, groupList = groupList, enrichment = "GSA", mc.cores=1, 
 #' nperms=200, random.seed = 1)
-#' View(GSAComb)
+#' GSAComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
 #' 
 #' # perform bi-level meta-analysi in conjunction with PADOG
 #' PADOGComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
 #' dataList = dataList, groupList = groupList, enrichment = "PADOG", 
-#' mc.cores=3, NI=200)
-#' View(PADOGComb)
+#' mc.cores=1, NI=200)
+#' PADOGComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
 #' 
 #' @import GSA
 #' @import PADOG
 #' @import limma
+#' @import stats
+#' @import parallel
+#' @import Biobase
+#' @import utils
 #' @export
 BilevelAnalysisGeneset <- function (gslist, gs.names, dataList, groupList, splitSize=5, metaMethod=addCLT, enrichment = "ORA", pCutoff=0.05, percent=0.05, mc.cores=1, ...) {  
     if (splitSize < 3) {
@@ -484,43 +495,98 @@ BilevelAnalysisGeneset <- function (gslist, gs.names, dataList, groupList, split
     FinalResults
 }
 
-runAMLExamples <- function () {
-    x=loadKEGGPathways()    
-    gslist=lapply(x$kpg,FUN=function(x){return (x@nodes);})
-    gs.names=x$kpn
-    
-    dataSets=c("GSE14924_CD4", "GSE17054", "GSE57194", "GSE33223", "GSE42140", "GSE8023")
-    dataList <- list()
-    groupList <- list()
-    for (i in 1:length(dataSets)) {
-        dataset=dataSets[i]
-        data(list=dataset)
-        group <- get(paste("group_",dataset,sep=""))
-        data=get(paste("data_",dataset,sep=""))
-        dataList[[i]] = data
-        groupList[[i]] = group
-    }
-    names(dataList)=names(groupList)=dataSets
-    
-    ORAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-        dataList = dataList, groupList = groupList, 
-        enrichment = "ORA", mc.cores=1)
-    ORAComb[1:10, c("Name", "rBLMA", "pBLMA.fdr")]
-    
-    GSAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-        dataList = dataList, groupList = groupList, enrichment = "GSA", 
-        mc.cores=2, nperms=200, random.seed = 1)
-    GSAComb[1:10, c("Name", "rBLMA", "pBLMA.fdr")]
-    
-    set.seed(1)
-    PADOGComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-        dataList = dataList, groupList = groupList, enrichment = "PADOG", 
-        mc.cores=2, NI=200)
-    PADOGComb[1:10, c("Name", "rBLMA", "pBLMA.fdr")]
-    
-    IAComb=BilevelAnalysisPathway(kpg = x$kpg, kpn = x$kpn, 
-        dataList = dataList, groupList = groupList, mc.cores = 2)
-}
 
 
+
+
+#' This is data to be included in my package
+#' @name data_GSE17054
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE17054}
+#' @usage data(GSE17054)
+#' @format a data frame with 4738 rows and 9 columns. 
+#' The rows represent the genes and the columns represent the samples.
+#' @keywords dataset
+NULL
+
+#' This is data to be included in my package
+#' @name group_GSE17054
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE17054}
+#' @usage data(GSE17054)
+#' @format a vector that represents the sample grouping for data_GSE17054. 
+#' The elements of \emph{group_GSE17054} are either 'c' (control) or 'd' (disease). 
+#' @keywords dataset
+NULL
+
+
+#' This is data to be included in my package
+#' @name data_GSE57194
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE57194}
+#' @usage data(GSE57194)
+#' @format a data frame with 4114 rows and 12 columns. 
+#' The rows represent the genes and the columns represent the samples.
+#' @keywords dataset
+NULL
+
+#' This is data to be included in my package
+#' @name group_GSE57194
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE57194}
+#' @usage data(GSE57194)
+#' @format a vector that represents the sample grouping for data_GSE57194. 
+#' The elements of \emph{group_GSE57194} are either 'c' (control) or 'd' (disease). 
+#' @keywords dataset
+NULL
+
+
+#' This is data to be included in my package
+#' @name data_GSE33223
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE33223}
+#' @usage data(GSE33223)
+#' @format a data frame with 4114 rows and 30 columns. 
+#' The rows represent the genes and the columns represent the samples.
+#' @keywords dataset
+NULL
+
+#' This is data to be included in my package
+#' @name group_GSE33223
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE33223}
+#' @usage data(GSE33223)
+#' @format a vector that represents the sample grouping for data_GSE33223. 
+#' The elements of \emph{group_GSE33223} are either 'c' (control) or 'd' (disease). 
+#' @keywords dataset
+NULL
+
+
+#' This is data to be included in my package
+#' @name data_GSE42140
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE42140}
+#' @usage data(GSE42140)
+#' @format a data frame with 4114 rows and 31 columns. 
+#' The rows represent the genes and the columns represent the samples.
+#' @keywords dataset
+NULL
+
+#' This is data to be included in my package
+#' @name group_GSE42140
+#' @docType data
+#' @description Please see the package vignette for description. 
+#' @references \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE42140}
+#' @usage data(GSE42140)
+#' @format a vector that represents the sample grouping for data_GSE42140. 
+#' The elements of \emph{group_GSE42140} are either 'c' (control) or 'd' (disease). 
+#' @keywords dataset
+NULL
 

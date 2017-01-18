@@ -59,6 +59,7 @@
 #' # p-value obtained from an intra-experiment analysis
 #' IntraAnalysisClassic(x, y, func=wilcox.test, alternative = "less")
 #' 
+#' @import stats
 #' @export
 IntraAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func=t.test, p.value="p.value", ...) {
     if (splitSize < 3) {
@@ -125,6 +126,7 @@ IntraAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func
 #' addCLT(unlist(lapply(l1, FUN=function(x) t.test(x, alter="g")$p.value)))
 #' #Bi-level meta-analysis
 #' BilevelAnalysisClassic(x=l1, alternative="greater")
+#' @import stats
 #' @export
 BilevelAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func=t.test, p.value="p.value", ...) {
     if (splitSize < 3) {
@@ -176,13 +178,13 @@ BilevelAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, fu
 #' 
 #' @seealso \code{\link{BilevelAnalysisGene}}, \code{\link{IntraAnalysisClassic}}, \code{link{BilevelAnalysisClassic}}
 #' @examples
-#' data(GSE14924_CD4)
-#' data = data_GSE14924_CD4
-#' group=group_GSE14924_CD4
-#' X = IntraAnalysisGene(data, group)
-#' View(X)
+#' data(GSE33223)
+#' X = IntraAnalysisGene(data_GSE33223, group_GSE33223)
+#' X[1:10,]
 #' 
 #' @import limma
+#' @import stats
+#' @import Biobase
 #' @export
 IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
     if (splitSize < 3) {
@@ -203,7 +205,7 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
                             
                         s=c(names(group)[which(group=="c")], sample)
                         g=group[s]
-                        d <- data[,names(g)]
+                        d=data[,names(g)]
                                      
                         gset=ExpressionSet(as.matrix(d))
                         fl <- as.factor(g)
@@ -287,7 +289,7 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
 #' 
 #' @seealso \code{\link{BilevelAnalysisGene}}, \code{\link{IntraAnalysisClassic}}
 #' @examples
-#' dataSets=c("GSE14924_CD4", "GSE17054", "GSE57194", "GSE33223", "GSE42140", "GSE8023")
+#' dataSets=c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
 #' data(list=dataSets, package="BLMA")
 #' dataList <- list()
 #' groupList <- list()
@@ -301,10 +303,13 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
 #' names(dataList)=names(groupList)=dataSets
 #' 
 #' Z=BilevelAnalysisGene(dataList = dataList, groupList = groupList)
-#' View(Z)
+#' Z[1:10,]
+#' 
+#' @import stats
+#' @import Biobase
+#' @import stats
 #' @export
-BilevelAnalysisGene <- function (dataList, groupList, splitSize=5, 
-                                 metaMethod=addCLT) {
+BilevelAnalysisGene <- function (dataList, groupList, splitSize=5, metaMethod=addCLT) {
     retList = lapply(as.list(seq(length(dataList))), 
                 FUN = function (i, dataList, groupList, metaMethod) {
                     cat("Working on dataset ", names(dataList)[[i]], ", " , ncol(dataList[[i]]), " samples \n", sep="")
@@ -334,28 +339,3 @@ BilevelAnalysisGene <- function (dataList, groupList, splitSize=5,
     Result
 }
 
-exampleGene <- function() {
-    data(GSE14924_CD4)
-    data = data_GSE14924_CD4
-    group=group_GSE14924_CD4
-    X = IntraAnalysisGene(data, group)
-    View(X)
-    
-    dataSets=c("GSE14924_CD4", "GSE17054", "GSE57194", "GSE33223", "GSE42140", "GSE8023")
-    data(list=dataset, package="BLMA")
-    dataList <- list()
-    groupList <- list()
-    for (i in 1:length(dataSets)) {
-        dataset=dataSets[i]
-        group <- get(paste("group_",dataset,sep=""))
-        data=get(paste("data_",dataset,sep=""))
-        dataList[[i]] = data
-        groupList[[i]] = group
-    }
-    names(dataList)=names(groupList)=dataSets
-    
-    X=BilevelAnalysisGene(dataList,groupList)
-    View(X$Bilevel)
-    names(X$IntraLevel)
-    View(X$IntraLevel[[1]])
-}
