@@ -9,19 +9,12 @@ Description: Suit of tools for bi-level meta-analysis. The package can be
 	used in a wide range of applications, including general hypothesis 
 	testings, differential expression analysis, functional analysis, 
 	and pathway analysis. 
-biocViews: GeneSetEnrichment, Pathways, DifferentialExpression, Microarray
+biocViews: GeneSetEnrichment, Pathways, DifferentialExpression,
+        Microarray
 License: GPL (>=2)
-Depends:
-    ROntoTools,
-    GSA,
-    PADOG,
-    limma,
-    graph,
-    stats,
-    utils,
-    parallel,
-    Biobase
-Suggests:
-    RUnit,
-    BiocGenerics
+Depends: ROntoTools, GSA, PADOG, limma, graph, stats, utils, parallel,
+        Biobase
+Suggests: RUnit, BiocGenerics
 RoxygenNote: 5.0.1
+NeedsCompilation: no
+Packaged: 2017-01-19 20:30:56 UTC; tinnguyen

@@ -4,7 +4,7 @@ test_loadKEGGPathways <- function() {
 }
 
 test_BilevelAnalysisGeneset <- function() {
-    dataSets=c("GSE33223")
+    dataSets=c("GSE17054")
     data(list=dataSets, package="BLMA")
     dataList <- list()
     groupList <- list()
@@ -38,7 +38,7 @@ test_BilevelAnalysisGeneset <- function() {
 }
 
 test_BilevelAnalysisPathway <- function() {
-    dataSets=c("GSE33223")
+    dataSets=c("GSE17054")
     data(list=dataSets, package="BLMA")
     dataList <- list()
     groupList <- list()
