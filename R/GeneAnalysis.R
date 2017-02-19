@@ -31,44 +31,44 @@
 #' bi-level meta-analysis approach -- applied to biological pathway analysis. 
 #' Bioinformatics, 32(3):409-416, 2016.
 #' 
-#' @seealso \code{\link{BilevelAnalysisClassic}}, \code{\link{IntraAnalysisGene}}, \code{\link{BilevelAnalysisGene}}
+#' @seealso \code{\link{bilevelAnalysisClassic}}, \code{\link{intraAnalysisGene}}, \code{\link{bilevelAnalysisGene}}
 #' @examples
 #' set.seed(1)
-#' x=rnorm(10, mean = 0)
+#' x <- rnorm(10, mean = 0)
 
 #' # p-value obtained from a one-sample t-test
 #' t.test(x, mu=1, alternative = "less")$p.value
 #' # p-value obtained from an intra-experiment analysis
-#' IntraAnalysisClassic(x, func=t.test, mu=1, alternative = "less")
+#' intraAnalysisClassic(x, func=t.test, mu=1, alternative = "less")
 #' 
 #' # p-value obtained from a one-sample wilcoxon test
 #' wilcox.test(x, mu=1, alternative = "less")$p.value
 #' # p-value obtained from an intra-experiment analysis
-#' IntraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "less")
+#' intraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "less")
 #' 
 #' set.seed(1)
-#' x=rnorm(20, mean=0); y=rnorm(20, mean=1)
+#' x <- rnorm(20, mean=0); y <- rnorm(20, mean=1)
 
 #' # p-value obtained from a two-sample t-test
 #' t.test(x,y,alternative="less")$p.value
 #' # p-value obtained from an intra-experiment analysis
-#' IntraAnalysisClassic(x, y, func=t.test, alternative = "less")
+#' intraAnalysisClassic(x, y, func=t.test, alternative = "less")
 
 #' # p-value obtained from a two-sample wilcoxon test
 #' wilcox.test(x,y,alternative="less")$p.value
 #' # p-value obtained from an intra-experiment analysis
-#' IntraAnalysisClassic(x, y, func=wilcox.test, alternative = "less")
+#' intraAnalysisClassic(x, y, func=wilcox.test, alternative = "less")
 #' 
 #' @import stats
 #' @export
-IntraAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func=t.test, p.value="p.value", ...) {
+intraAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func=t.test, p.value="p.value", ...) {
     if (splitSize < 3) {
         stop("splitSize should be at least 3")
     }
     
-    ret=NULL
+    ret <- NULL
     
-    l = splitS(x, splitSize)
+    l <- splitS(x, splitSize)
     
     retList <- lapply(l, 
                       FUN=function(z, y, func) {
@@ -99,7 +99,7 @@ IntraAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func
 #' @details This function performs a bi-level meta-analysis for the lists 
 #' of samples [1]. It performs intra-experiment analyses to compare the 
 #' vectors in x agains the corresponding vectors in y using the function 
-#' \code{\link{IntraAnalysisClassic}} in conjunction with the test provided 
+#' \code{\link{intraAnalysisClassic}} in conjunction with the test provided 
 #' in \emph{func}. For example, it compares the first vector in x with the 
 #' first vector in y, the second vector in x with the second vector in y, etc. 
 #' When y is null, then the comparisons are reduced to one-sample tests. After 
@@ -115,25 +115,25 @@ IntraAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func
 #' bi-level meta-analysis approach -- applied to biological pathway analysis. 
 #' Bioinformatics, 32(3):409-416, 2016.
 #' 
-#' @seealso \code{\link{IntraAnalysisClassic}}, \code{\link{IntraAnalysisGene}}, \code{\link{BilevelAnalysisGene}}
+#' @seealso \code{\link{intraAnalysisClassic}}, \code{\link{intraAnalysisGene}}, \code{\link{bilevelAnalysisGene}}
 #' @examples
 #' set.seed(1)
-#' l1 = lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=1))
+#' l1 <- lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=1))
 #' l1
 #' # one-sample t-test
 #' lapply(l1, FUN=function(x) t.test(x, alternative="greater")$p.value)
 #' # combining the p-values of one-sample t-tests:
 #' addCLT(unlist(lapply(l1, FUN=function(x) t.test(x, alter="g")$p.value)))
 #' #Bi-level meta-analysis
-#' BilevelAnalysisClassic(x=l1, alternative="greater")
+#' bilevelAnalysisClassic(x=l1, alternative="greater")
 #' @import stats
 #' @export
-BilevelAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func=t.test, p.value="p.value", ...) {
+bilevelAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, func=t.test, p.value="p.value", ...) {
     if (splitSize < 3) {
         stop("splitSize should be at least 3")
     }
     
-    metaMethod(sapply(seq(x),FUN=function(i) IntraAnalysisClassic(x[[i]], 
+    metaMethod(sapply(seq(x),FUN=function(i) intraAnalysisClassic(x[[i]], 
                 y[[i]], splitSize, metaMethod, func, p.value, ...)))
 }
 
@@ -176,17 +176,17 @@ BilevelAnalysisClassic <- function(x, y=NULL, splitSize=5, metaMethod=addCLT, fu
 #' bi-level meta-analysis approach -- applied to biological pathway analysis. 
 #' Bioinformatics, 32(3):409-416, 2016.
 #' 
-#' @seealso \code{\link{BilevelAnalysisGene}}, \code{\link{IntraAnalysisClassic}}, \code{link{BilevelAnalysisClassic}}
+#' @seealso \code{\link{bilevelAnalysisGene}}, \code{\link{intraAnalysisClassic}}, \code{link{bilevelAnalysisClassic}}
 #' @examples
 #' data(GSE33223)
-#' X = IntraAnalysisGene(data_GSE33223, group_GSE33223)
-#' X[1:10,]
+#' X <- intraAnalysisGene(data_GSE33223, group_GSE33223)
+#' head(X)
 #' 
 #' @import limma
 #' @import stats
 #' @import Biobase
 #' @export
-IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
+intraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
     if (splitSize < 3) {
         stop("splitSize should be at least 3")
     }
@@ -194,11 +194,11 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
     group <- group[order(group)]
     data <- data[,names(group)]
     
-    diseases=paste(names(group)[which(group=="d")])
+    diseases <- paste(names(group)[which(group=="d")])
     
-    l = splitS(diseases, splitSize)
+    l <- splitS(diseases, splitSize)
     
-    resList=lapply(l, 
+    resList <- lapply(l, 
                     FUN= function (sample, group, data) {
                         ret=rep(NA, nrow(data))
                         names(ret)=rownames(data)
@@ -222,11 +222,11 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
                          }
                         , group=group, data=data)
     
-    result=data.frame(row.names=rownames(data))
-    result=cbind(result,do.call(cbind, resList))
-    result$pIntra=apply(result, 1, FUN = metaMethod)
+    result <- data.frame(row.names=rownames(data))
+    result <- cbind(result,do.call(cbind, resList))
+    result$pIntra <- apply(result, 1, FUN = metaMethod)
     
-    gset=ExpressionSet(as.matrix(data))
+    gset <- ExpressionSet(as.matrix(data))
     fl <- as.factor(group)
     gset$description <- fl
     design <- model.matrix(~ description + 0, gset)
@@ -237,12 +237,12 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
     fit2 <- eBayes(fit2)
     tT <- topTable(fit2, adjust="none", sort.by="none", number=Inf)
 
-    FinalResult = data.frame(row.names=rownames(data))
-    FinalResult$logFC = tT$logFC
-    FinalResult$pLimma = tT$P.Value
-    FinalResult$pLimma.fdr=p.adjust(FinalResult$pLimma,method = "fdr")
-    FinalResult$pIntra = result$pIntra
-    FinalResult$pIntra.fdr=p.adjust(FinalResult$pIntra,method = "fdr")
+    FinalResult <- data.frame(row.names=rownames(data))
+    FinalResult$logFC <-  tT$logFC
+    FinalResult$pLimma <-  tT$P.Value
+    FinalResult$pLimma.fdr <- p.adjust(FinalResult$pLimma,method = "fdr")
+    FinalResult$pIntra <- result$pIntra
+    FinalResult$pIntra.fdr <- p.adjust(FinalResult$pIntra,method = "fdr")
     FinalResult
 }
 
@@ -287,55 +287,47 @@ IntraAnalysisGene <- function (data, group, splitSize=5, metaMethod=addCLT) {
 #' bi-level meta-analysis approach -- applied to biological pathway analysis. 
 #' Bioinformatics, 32(3):409-416, 2016.
 #' 
-#' @seealso \code{\link{BilevelAnalysisGene}}, \code{\link{IntraAnalysisClassic}}
+#' @seealso \code{\link{bilevelAnalysisGene}}, \code{\link{intraAnalysisClassic}}
 #' @examples
-#' dataSets=c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
+#' dataSets <- c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
 #' data(list=dataSets, package="BLMA")
-#' dataList <- list()
-#' groupList <- list()
-#' for (i in 1:length(dataSets)) {
-#'     dataset=dataSets[i]
-#'     group <- get(paste("group_",dataset,sep=""))
-#'     data=get(paste("data_",dataset,sep=""))
-#'     dataList[[i]] = data
-#'     groupList[[i]] = group
-#' }
-#' names(dataList)=names(groupList)=dataSets
-#' 
-#' Z=BilevelAnalysisGene(dataList = dataList, groupList = groupList)
-#' Z[1:10,]
+#' names(dataSets) <- dataSets
+#' dataList <- lapply(dataSets, function(dataset) get(paste0("data_", dataset)))
+#' groupList <- lapply(dataSets, function(dataset) get(paste0("group_", dataset)))
+#' Z <- bilevelAnalysisGene(dataList = dataList, groupList = groupList)
+#' head(Z)
 #' 
 #' @import stats
 #' @import Biobase
 #' @import stats
 #' @export
-BilevelAnalysisGene <- function (dataList, groupList, splitSize=5, metaMethod=addCLT) {
-    retList = lapply(as.list(seq(length(dataList))), 
+bilevelAnalysisGene <- function (dataList, groupList, splitSize=5, metaMethod=addCLT) {
+    retList <- lapply(as.list(seq(length(dataList))), 
                 FUN = function (i, dataList, groupList, metaMethod) {
                     cat("Working on dataset ", names(dataList)[[i]], ", " , ncol(dataList[[i]]), " samples \n", sep="")
                     
-                    IntraAnalysisGene(dataList[[i]], groupList[[i]], splitSize=splitSize, metaMethod=metaMethod)
+                    intraAnalysisGene(dataList[[i]], groupList[[i]], splitSize=splitSize, metaMethod=metaMethod)
                 }, dataList=dataList, groupList=groupList, metaMethod=metaMethod)
     
-    names(retList)=names(dataList)
+    names(retList) <- names(dataList)
     
-    genes=Reduce(intersect, lapply(dataList, FUN=rownames))
-    pTableLimma=data.frame(row.names=genes)
+    genes <- Reduce(intersect, lapply(dataList, FUN=rownames))
+    pTableLimma <- data.frame(row.names=genes)
     for (i in 1:length(dataList)) {
-        pTableLimma[,i]=retList[[i]][genes,"pLimma"]
+        pTableLimma[,i] <- retList[[i]][genes,"pLimma"]
     }
     
-    pTableIntra=data.frame(row.names=genes)
+    pTableIntra <- data.frame(row.names=genes)
     for (i in 1:length(dataList)) {
-        pTableIntra[,i]=retList[[i]][genes,"pIntra"]
+        pTableIntra[,i] <- retList[[i]][genes,"pIntra"]
     }
     
-    Result=data.frame(row.names=genes, pLimma=apply(pTableLimma, 1, FUN = metaMethod), 
+    Result <- data.frame(row.names=genes, pLimma=apply(pTableLimma, 1, FUN = metaMethod), 
                         pBilevel=apply(pTableIntra, 1, FUN = metaMethod))
-    Result$pLimma.fdr=p.adjust(Result$pLimma, method="fdr")
-    Result$pBilevel.fdr=p.adjust(Result$pBilevel, method="fdr")
+    Result$pLimma.fdr <- p.adjust(Result$pLimma, method="fdr")
+    Result$pBilevel.fdr <- p.adjust(Result$pBilevel, method="fdr")
     Result <- Result[c(1,3,2,4)]
-    Result=Result[order(Result$pBilevel),]
+    Result <- Result[order(Result$pBilevel),]
     Result
 }
 

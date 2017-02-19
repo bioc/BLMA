@@ -20,16 +20,16 @@ transformed into standard normal variables
 Considering a set of \emph{m} independent significance tests, the resulted 
 p-values are independent and uniformly distributed between \emph{0} and 
 \emph{1} under the null hypothesis. Stouffer's method is similar to 
-Fisher's method (\link{fishersMethod}), with the difference is that it 
+Fisher's method (\link{fisherMethod}), with the difference is that it 
 uses the sum of p-values transformed into standard normal variables 
 instead of the log product.
 }
 \examples{
 
-x=rep(0,10)
+x <- rep(0,10)
 stoufferMethod(x)
 
-x=runif(10)
+x <- runif(10)
 stoufferMethod(x)
 
 }
@@ -42,6 +42,6 @@ The American Soldier: Adjustment during army life, volume 1.
 Princeton University Press, Princeton, 1949.
 }
 \seealso{
-\code{\link{fishersMethod}}, \code{\link{addCLT}}
+\code{\link{fisherMethod}}, \code{\link{addCLT}}
 }
 

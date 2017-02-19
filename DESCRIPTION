@@ -2,7 +2,7 @@ Package: BLMA
 Date: 2017-01-16
 Type: Package
 Title: BLMA: A package for bi-level meta-analysis
-Version: 0.99.3
+Version: 0.99.4
 Author: Tin Nguyen <tin@wayne.edu> and Sorin Draghici <sorin@wayne.edu>
 Maintainer: Tin Nguyen <tin@wayne.edu>
 Description: Suit of tools for bi-level meta-analysis. The package can be 
@@ -17,4 +17,4 @@ Depends: ROntoTools, GSA, PADOG, limma, graph, stats, utils, parallel,
 Suggests: RUnit, BiocGenerics
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2017-01-19 20:30:56 UTC; tinnguyen
+Packaged: 2017-02-19 06:02:17 UTC; tinnguyen

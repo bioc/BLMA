@@ -105,41 +105,41 @@ splitting it into smaller studies and then combining them.
 See Nguyen et al.~\cite{nguyen2015novel} for a detailed explanation.
 
 \subsection{Intra-experiment analysis}
-We design the function \emph{IntraAnalysisClassic} in a way that it can be 
+We design the function \emph{intraAnalysisClassic} in a way that it can be 
 used in conjunction with classical tests without any restriction. For example,
 intead of calling one-sample left-tailed t-test or Wilcoxon test, users can 
-call the function \emph{IntraAnalysisClassic} with the same parameters. Below
+call the function \emph{intraAnalysisClassic} with the same parameters. Below
 are examples of how to use t-test and Wilcoxon test:
 
 <<>>=
 # one-sample tests
 library(BLMA)
 set.seed(1)
-x=rnorm(10, mean = 0)
+x <- rnorm(10, mean = 0)
 # one-sample left-tailed t-test
 t.test(x, mu=1, alternative = "less")$p.value
 # one-sample left-tailed intra-experiment analysis with t-test
-IntraAnalysisClassic(x, func=t.test, mu=1, alternative = "less")
+intraAnalysisClassic(x, func=t.test, mu=1, alternative = "less")
 # one-sample right-tailed t-test
 t.test(x, mu=1, alternative = "greater")$p.value
 # one-sample right-tailed intra-experiment analysis with t-test
-IntraAnalysisClassic(x, func=t.test, mu=1, alternative = "greater")
+intraAnalysisClassic(x, func=t.test, mu=1, alternative = "greater")
 # one-sample two-tailed t-test
 t.test(x, mu=1)$p.value
 # one-sample two-tailed intra-experiment analysis with t-test
-IntraAnalysisClassic(x, func=t.test, mu=1)
+intraAnalysisClassic(x, func=t.test, mu=1)
 # one-sample left-tailed Wilcoxon test
 wilcox.test(x, mu=1, alternative = "less")$p.value
 # one-sample left-tailed intra-experiment analysis with Wilcoxon test
-IntraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "less")
+intraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "less")
 # one-sample right-tailed Wilcoxon test
 wilcox.test(x, mu=1, alternative = "greater")$p.value
 # one-sample right-tailed intra-experiment analysis with Wilcoxon test
-IntraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "greater")
+intraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "greater")
 # one-sample two-tailed Wilcoxon test
 wilcox.test(x, mu=1)$p.value
 # one-sample two-tailed intra-experiment analysis with Wilcoxon test
-IntraAnalysisClassic(x, func=wilcox.test, mu=1)
+intraAnalysisClassic(x, func=wilcox.test, mu=1)
 @
 
 Similarly, the intra-experiment analysis can be used with two-sample tests:
@@ -147,19 +147,19 @@ Similarly, the intra-experiment analysis can be used with two-sample tests:
 <<>>=
 # two-sample tests
 set.seed(1)
-x=rnorm(20, mean=0); y=rnorm(20, mean=1)
+x <- rnorm(20, mean=0); y=rnorm(20, mean=1)
 # two-sample left-tailed t-test
 t.test(x,y,alternative="less")$p.value
 # two-sample left-tailed intra-experiment analysis with t-test
-IntraAnalysisClassic(x, y, func=t.test, alternative = "less")
+intraAnalysisClassic(x, y, func=t.test, alternative = "less")
 # two-sample right-tailed t-test
 t.test(x,y,alternative="greater")$p.value
 # two-sample right-tailed intra-experiment analysis with t-test
-IntraAnalysisClassic(x, y, func=t.test, alternative = "greater")
+intraAnalysisClassic(x, y, func=t.test, alternative = "greater")
 # two-sample two-tailed t-test
 t.test(x,y)$p.value
 # two-sample two-tailed intra-experiment analysis with t-test
-IntraAnalysisClassic(x, y, func=t.test)
+intraAnalysisClassic(x, y, func=t.test)
 @
 
 \subsection{Bi-level meta-analysis}
@@ -168,15 +168,15 @@ Some example code for bi-level meta-analysis:
 <<>>=
 # one-sample tests
 set.seed(1)
-l1 = lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=1))
-l0 = lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=0))
+l1 <- lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=1))
+l0 <- lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=0))
 # one-sample right-tailed t-test
 lapply(l1, FUN=function(x) t.test(x, alternative="greater")$p.value)
 # combining the p-values of one-sample t-test:
 addCLT(unlist(lapply(l1, FUN=function(x) 
     t.test(x, alternative="greater")$p.value)))
 #Bi-level meta-analysis with one-sample right-tailed t-test
-BilevelAnalysisClassic(x=l1, func=t.test, alternative="greater")
+bilevelAnalysisClassic(x=l1, func=t.test, alternative="greater")
 # two-sample left-tailed t-test
 lapply(seq(l1), FUN=function(i,l1,l0) 
     t.test(l1[[i]], l0[[i]], alternative="greater")$p.value, l1, l0)
@@ -184,9 +184,9 @@ lapply(seq(l1), FUN=function(i,l1,l0)
 addCLT(unlist(lapply(seq(l1), FUN=function(i,l1,l0) 
     t.test(l1[[i]], l0[[i]], alternative="greater")$p.value, l1, l0)))
 #Bi-level meta-analysis with two-sample right-tailed t-test
-BilevelAnalysisClassic(x=l1, y=l0, func=t.test, alternative="greater")
+bilevelAnalysisClassic(x=l1, y=l0, func=t.test, alternative="greater")
 #Bi-level meta-analysis with two-sample left-tailed t-test
-BilevelAnalysisClassic(x=l1, y=l0, func=t.test, alternative="less")
+bilevelAnalysisClassic(x=l1, y=l0, func=t.test, alternative="less")
 @
 
 
@@ -233,35 +233,24 @@ ORA~\cite{Draghici:2003a,Tavazoie:1999} for the 4 datasets:
 library(BLMA)
 # load KEGG pathways and create genesets
 x=loadKEGGPathways()
-gslist=lapply(x$kpg,FUN=function(y){return (nodes(y));})
-gs.names=x$kpn[names(gslist)]
+gslist <- lapply(x$kpg,FUN=function(y){return (nodes(y));})
+gs.names <- x$kpn[names(gslist)]
 
 # load the 4 AML datasets
-dataSets=c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
+dataSets <- c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
 data(list=dataSets, package="BLMA")
 
 # prepare dataList and groupList
-dataList <- list()
-groupList <- list()
-for (i in 1:length(dataSets)) {
-   dataset=dataSets[i]
-   group <- get(paste("group_",dataset,sep=""))
-   data=get(paste("data_",dataset,sep=""))
-   dataList[[i]] = data
-   groupList[[i]] = group
-}
-names(dataList)=names(groupList)=dataSets
+names(dataSets) <- dataSets
+dataList <- lapply(dataSets, function(dataset) get(paste0("data_", dataset)))
+groupList <- lapply(dataSets, function(dataset) get(paste0("group_", dataset)))
 
 # perform bi-level meta-analysis in conjunction with ORA
-t1=Sys.time()
-ORAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-            dataList = dataList, groupList = groupList, enrichment = "ORA")
-t2=Sys.time(); 
-# running time
-t2-t1
+system.time(ORAComb <- bilevelAnalysisGeneset(gslist, gs.names, dataList, 
+                                              groupList, enrichment = "ORA"))
 #print the results
 options(digits=2)
-ORAComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
+head(ORAComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
 @
 
 The running time for ORA is only 4 seconds. With a cutoff of 0.05, there are 
@@ -278,16 +267,12 @@ using the \emph{mc.cores} parameter:
 
 <<>>=
 # perform bi-level meta-analysis in conjunction with GSA
-t1=Sys.time()
-GSAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-            dataList = dataList, groupList = groupList, enrichment = "GSA", 
-            mc.cores=1, nperms=200, random.seed = 1)
-t2=Sys.time(); 
-# running time
-t2-t1
+system.time(GSAComb <- bilevelAnalysisGeneset(gslist, gs.names, dataList, 
+                                            groupList, enrichment = "GSA", 
+                                            nperms=200, random.seed = 1))
 #print the results
 options(digits=2)
-GSAComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
+head(GSAComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
 @
 
 The running time of the meta-analysis in conjunction with GSA is approximately 
@@ -302,16 +287,11 @@ PADOG~\cite{Tarca2012down}:
 
 <<>>=
 set.seed(1)
-t1=Sys.time()
-PADOGComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
-            dataList = dataList, groupList = groupList, enrichment = "PADOG", 
-            mc.cores=1, NI=200)
-t2=Sys.time(); 
-# running time
-t2-t1
+system.time(PADOGComb <- bilevelAnalysisGeneset(gslist, gs.names, dataList, 
+                                    groupList, enrichment = "PADOG", NI=200))
 #print the results
 options(digits=2)
-PADOGComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
+head(PADOGComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
 @
 
 \subsection{Impact Analysis (IA)}
@@ -322,16 +302,11 @@ pathway graphs (e.g., graphNEL). Below is an example code for running BLMA
 in conjunction with IA:
 
 <<>>=
-x=loadKEGGPathways()  
-t1=Sys.time()
-IAComb=BilevelAnalysisPathway(kpg = x$kpg, kpn = x$kpn, dataList = dataList, 
-                              groupList = groupList, mc.cores = 1)
-t2=Sys.time(); 
-# running time
-t2-t1
+x <- loadKEGGPathways()  
+system.time(IAComb <- bilevelAnalysisPathway(x$kpg, x$kpn, dataList, groupList))
 #print the results
 options(digits=2)
-IAComb[1:10, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")]
+head(IAComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
 @
 
 \section{BLMA for differential expression analysis}
@@ -363,25 +338,21 @@ The code for analyzing the dataset GSE33223 is as follows:
 #perform intra-experiment analysis of the dataset GSE33223 using addCLT
 library(BLMA)
 data(GSE33223)
-t1=Sys.time()
-X = IntraAnalysisGene(data_GSE33223, group_GSE33223)
-Sys.time()-t1
-X = X[order(X$pIntra), ]
+system.time(X <- intraAnalysisGene(data_GSE33223, group_GSE33223))
+X <- X[order(X$pIntra), ]
 # top 10 genes
-X[1:10,]
+head(X)
 # bottom 10 genes
-X[(nrow(X)-10):nrow(X),]
+tail(X)
 
 #perform intra-experiment analysis of GSE33223 using Fisher's method
-t1=Sys.time()
-Y = IntraAnalysisGene(data_GSE33223, group_GSE33223, 
-                      metaMethod=fishersMethod)
-Sys.time()-t1
+system.time(Y <- intraAnalysisGene(data_GSE33223, group_GSE33223, 
+                      metaMethod=fisherMethod))
 Y = Y[order(Y$pIntra), ]
 # top 10 genes
-Y[1:10,]
+head(Y)
 # bottom 10 genes
-Y[(nrow(Y)-10):nrow(Y),]
+tail(Y)
 @
 
 \subsection{Bi-level analysis}
@@ -394,28 +365,12 @@ experiments, and iv) pBilevel.fdr: FDR-corrected p-values of pBilevel.
 We demonstrate the bi-level analysis using the 8 example datasets as follows:
 
 <<>>=
-dataSets=c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
-data(list=dataSets, package="BLMA")
-dataList <- list()
-groupList <- list()
-for (i in 1:length(dataSets)) {
-   dataset=dataSets[i]
-   group <- get(paste("group_",dataset,sep=""))
-   data=get(paste("data_",dataset,sep=""))
-   dataList[[i]] = data
-   groupList[[i]] = group
-}
-names(dataList)=names(groupList)=dataSets
-
-# running time
-t1=Sys.time()
-Z=BilevelAnalysisGene(dataList = dataList, groupList = groupList)
-Sys.time()-t1
+system.time(Z <- bilevelAnalysisGene(dataList = dataList, groupList = groupList))
 
 # top 10 genes
-Z[1:10,]
+head(Z)
 # bottom 10 genes
-Z[(nrow(Z)-10):nrow(Z),]
+tail(Z)
 @
 
 
@@ -476,7 +431,7 @@ Z[(nrow(Z)-10):nrow(Z),]
 %     sample2=rnorm(n,M2)
 %     
 %     pttest[j]=t.test(sample2, sample1, alternative = "greater")$p.value
-%     pIntra[j]=IntraAnalysisClassic(x=sample2, y=sample1, func=t.test, 
+%     pIntra[j]=intraAnalysisClassic(x=sample2, y=sample1, func=t.test, 
 %                                    alternative="greater")
 %   }
 %   ttestTPR[i]=sum(pttest<=threshold)/100
@@ -564,7 +519,7 @@ Z[(nrow(Z)-10):nrow(Z),]
 %             rnorm(n=sample(10:100,1), mean=M1))
 %         l2 = lapply(as.list(seq(freq[i])),FUN=function (x) 
 %             rnorm(n=sample(10:100,1), mean=M2))
-%         pIntra[j]=BilevelAnalysisClassic(x=l2,y=l1,func=t.test, 
+%         pIntra[j]=bilevelAnalysisClassic(x=l2,y=l1,func=t.test, 
 %                                          alternative="greater")
 %     }
 %     BilevelTPR[i]=sum(pIntra<threshold)/100

@@ -29,15 +29,15 @@
 #' 
 #' @examples
 #' 
-#' x=rep(0,10)
-#' fishersMethod(x)
+#' x <- rep(0,10)
+#' fisherMethod(x)
 #' 
-#' x=runif(10)
-#' fishersMethod(x)
+#' x <- runif(10)
+#' fisherMethod(x)
 #' 
 #' @import stats
 #' @export 
-fishersMethod = function(x) {
+fisherMethod <- function(x) {
     if(sum(is.na(x))>0) NA
     else pchisq(-2 * sum(log(x)), df=2*length(x), lower=FALSE)
 }
@@ -54,7 +54,7 @@ fishersMethod = function(x) {
 #' Considering a set of \emph{m} independent significance tests, the resulted 
 #' p-values are independent and uniformly distributed between \emph{0} and 
 #' \emph{1} under the null hypothesis. Stouffer's method is similar to 
-#' Fisher's method (\link{fishersMethod}), with the difference is that it 
+#' Fisher's method (\link{fisherMethod}), with the difference is that it 
 #' uses the sum of p-values transformed into standard normal variables 
 #' instead of the log product.
 #' 
@@ -72,43 +72,43 @@ fishersMethod = function(x) {
 #' The American Soldier: Adjustment during army life, volume 1. 
 #' Princeton University Press, Princeton, 1949.
 #' 
-#' @seealso \code{\link{fishersMethod}}, \code{\link{addCLT}}
+#' @seealso \code{\link{fisherMethod}}, \code{\link{addCLT}}
 #' 
 #' @examples
 #' 
-#' x=rep(0,10)
+#' x <- rep(0,10)
 #' stoufferMethod(x)
 #' 
-#' x=runif(10)
+#' x <- runif(10)
 #' stoufferMethod(x)
 #' 
 #' @import stats
 #' @export 
-stoufferMethod = function(x) {
+stoufferMethod <- function(x) {
     if(sum(is.na(x))>0) NA
     else pnorm(sum(qnorm(x)) / sqrt(length(x)))
 }
 
 #x is a vector of p-values
-IrwinHallDensity = function(x) {
-    n=length(x)
-    s=sum(x)
+IrwinHallDensity <- function(x) {
+    n <- length(x)
+    s <- sum(x)
     1/factorial(n-1) * sum(sapply(0:floor(s), 
                 function(k) (-1)^k * choose(n,k) * (s-k)^(n-1)))
 }
 
 #x is a vector of p-values
-IrwinHallCumulative = function(x) {
-    n=length(x)
-    s=sum(x)
+IrwinHallCumulative <- function(x) {
+    n <- length(x)
+    s <- sum(x)
     1/factorial(n) * sum(sapply(0:floor(s), 
                 function(k) (-1)^k * choose(n,k) * (s-k)^(n)))
 }
 
 
-additiveMethod = function(x) {
+additiveMethod <- function(x) {
     #x is a vector of p-values
-    n = length(x)
+    n <- length(x)
     if (n <= 20) {
         IrwinHallCumulative(x)
     } else {
@@ -117,17 +117,17 @@ additiveMethod = function(x) {
 }
 
 #x is a vector of p-values
-averageDensity = function(x) {
-    n=length(x)
-    a=mean(x)
+averageDensity <- function(x) {
+    n <- length(x)
+    a <- mean(x)
     n/factorial(n-1) * sum(sapply(0:floor(n*a), 
                 function(k) (-1)^k * choose(n,k) * (n*a-k)^(n-1)))
 }
 
 #x is a vector of p-values
-averageCumulative = function(x) {
-    n=length(x)
-    a=mean(x)
+averageCumulative <- function(x) {
+    n <- length(x)
+    a <- mean(x)
     1/factorial(n) * sum(sapply(0:floor(n*a), 
                 function(k) (-1)^k * choose(n,k) * (n*a-k)^(n)))
 }
@@ -184,22 +184,22 @@ averageCumulative = function(x) {
 #' 7th ACM International Conference on Bioin- formatics, Computational Biology, 
 #' and Health Informatics, pages 13-22. ACM, 2016.
 #' 
-#' @seealso \code{\link{fishersMethod}}, \code{\link{stoufferMethod}}
+#' @seealso \code{\link{fisherMethod}}, \code{\link{stoufferMethod}}
 #' 
 #' @examples
 #' 
-#' x=rep(0,10)
+#' x <- rep(0,10)
 #' addCLT(x)
 #' 
-#' x=runif(10)
+#' x <- runif(10)
 #' addCLT(x)
 #' 
 #' @import stats
 #' @export 
-addCLT = function(x) {
+addCLT <- function(x) {
     if(sum(is.na(x))>0) NA
     else {
-        n = length(x)
+        n <- length(x)
         if (n <= 20) {
             averageCumulative(x)
         } else {
@@ -209,23 +209,10 @@ addCLT = function(x) {
 }
 
 
-#' @title Spliting a vector of strings
-#' @description Split a vector of strings into several vectors
-#' @param x a vector of string
-#' @param splitSize size of split vectors
-#' @details
-#' The function splits a vector of strings into several vectors
-#' @return
-#' a list of string vectors
-#' @author
-#' Tin Nguyen and Sorin Draghici
-#' @examples 
-#' x=paste("sample", seq(20))
-#' splitS((x))
-#' @export
+
 splitS <- function(x, splitSize=5) {
-    g=ceiling(seq(x)/splitSize)
-    g[g==floor(length(x)/splitSize)+1]=floor(length(x)/splitSize)
+    g <- ceiling(seq(x)/splitSize)
+    g[g==floor(length(x)/splitSize)+1] <- floor(length(x)/splitSize)
     split(x, g)
 }
 

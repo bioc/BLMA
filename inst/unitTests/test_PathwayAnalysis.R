@@ -3,7 +3,7 @@ test_loadKEGGPathways <- function() {
     checkIdentical(names(x$kpg), names(x$kpn))
 }
 
-test_BilevelAnalysisGeneset <- function() {
+test_bilevelAnalysisGeneset <- function() {
     dataSets=c("GSE17054")
     data(list=dataSets, package="BLMA")
     dataList <- list()
@@ -22,14 +22,14 @@ test_BilevelAnalysisGeneset <- function() {
     gslist=lapply(x$kpg,FUN=function(y){return (nodes(y));})
     gs.names=x$kpn[names(gslist)]
     
-    ORAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
+    ORAComb=bilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
             dataList = dataList, groupList = groupList, enrichment = "ORA")
     
-    GSAComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
+    GSAComb=bilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
             dataList = dataList, groupList = groupList, enrichment = "GSA", 
             mc.cores=1, nperms=200, random.seed = 1)
     
-    PADOGComb=BilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
+    PADOGComb=bilevelAnalysisGeneset(gslist = gslist, gs.names = gs.names, 
             dataList = dataList, groupList = groupList, enrichment = "PADOG", 
             mc.cores=1, NI=200)
     
@@ -37,7 +37,7 @@ test_BilevelAnalysisGeneset <- function() {
     checkEqualsNumeric(dim(ORAComb),dim(PADOGComb))
 }
 
-test_BilevelAnalysisPathway <- function() {
+test_bilevelAnalysisPathway <- function() {
     dataSets=c("GSE17054")
     data(list=dataSets, package="BLMA")
     dataList <- list()
@@ -52,7 +52,7 @@ test_BilevelAnalysisPathway <- function() {
     names(dataList)=names(groupList)=dataSets
     
     x=loadKEGGPathways() 
-    IAComb=BilevelAnalysisPathway(kpg = x$kpg, kpn = x$kpn, dataList = dataList, 
+    IAComb=bilevelAnalysisPathway(kpg = x$kpg, kpn = x$kpn, dataList = dataList, 
                                   groupList = groupList, mc.cores = 1)
     
     checkTrue(setequal(rownames(IAComb),names(x$kpg)))

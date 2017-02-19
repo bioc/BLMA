@@ -24,7 +24,7 @@ The names of the vector are the pathway KEGG IDs.
 Load KEGG pathways and names
 }
 \examples{
-x=loadKEGGPathways()
+x <- loadKEGGPathways()
 }
 \author{
 Tin Nguyen and Sorin Draghici

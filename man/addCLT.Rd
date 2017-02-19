@@ -25,10 +25,10 @@ Central Limit Theorem to avoid underflow/overflow problems [2,3,4,5].
 }
 \examples{
 
-x=rep(0,10)
+x <- rep(0,10)
 addCLT(x)
 
-x=runif(10)
+x <- runif(10)
 addCLT(x)
 
 }
@@ -62,6 +62,6 @@ Meta-Analysis approach applied to System biology. In Proceedings of the
 and Health Informatics, pages 13-22. ACM, 2016.
 }
 \seealso{
-\code{\link{fishersMethod}}, \code{\link{stoufferMethod}}
+\code{\link{fisherMethod}}, \code{\link{stoufferMethod}}
 }
 
