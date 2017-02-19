@@ -17,4 +17,4 @@ Depends: ROntoTools, GSA, PADOG, limma, graph, stats, utils, parallel,
 Suggests: RUnit, BiocGenerics
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2017-02-19 06:02:17 UTC; tinnguyen
+Packaged: 2017-02-19 07:09:21 UTC; tinnguyen
