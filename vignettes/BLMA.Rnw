@@ -1,0 +1,554 @@
+%\VignetteIndexEntry{BLMA}
+%\VignetteKeywords{Gene Set Analysis, Pathway Analysis, Meta-analysis, Classical Hypothesis Testing, Differential Expression Analysis}
+%\VignettePackage{BLMA}
+
+\documentclass[11pt]{article}
+
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\newcommand{\sgn}{\text{sgn}}
+
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\title{BLMA: A package for bi-level meta-analysis}
+\author{Tin Nguyen and Sorin Draghici\\
+Department of Computer Science, Wayne State University, Detroit MI 48202}
+\maketitle
+
+\begin{abstract}
+This package provides a bi-level meta-analysis (BLMA) framework that can be 
+applied in a wide range of applications: functional analysis, pathway analysis, 
+differential expression analysis, and general hypothesis testing. 
+The framework is able to integrate multiple studies to gain more statistical 
+power, and can be used in conjunction with any statistical hypothesis testing 
+method. It exploits not only the vast number of studies performed in 
+independent laboratories, but also makes better use of the available number 
+of samples within individual studies. In this document, we provide example code 
+that applies BLMA in all of the areas mentioned above. 
+ 
+\end{abstract}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+
+\clearpage
+
+\section{Introduction}
+This document provides an introductory description on how to use the package. 
+For the extended description of the methods, please consult 
+Nguyen et al.~\cite{nguyen2015novel}. The bi-level meta-analysis (BLMA) 
+framework integrates independent experiments at two levels: an intra-experiment 
+analysis, and an inter-experiment analysis. First, for each experiment, 
+the intra-experiment analysis splits the dataset into smaller datasets, 
+performs a statistical test on each of the newly created small datasets, 
+then combines the p-values. Next, the inter-experiment analysis combines 
+those processed p-values, from each of the individual experiments. 
+
+In this package, we implement useful functions that allow users to integrate 
+data in many applications. First, we implement classical methods for combining 
+independent p-values, including Fisher's method~\cite{fisher1925statistical}, 
+Stouffer's method~\cite{stouffer1949the}. We also implement our new method 
+named addCLT~\cite{nguyen2015novel,nguyen2015DANUBE,nguyen2016overcoming,
+nguyen2016tomas}, which is based on the Irwin-Hall 
+distribution~\cite{philip1927distribution, irwin1927frequency} and the 
+Central Limit Theorem~\cite{kallenberg2002foundations}. These methods of 
+combining p-values (addCLT, Fisher's, Stouffer's, minP, and maxP) are the basic 
+building blocks of the BLMA framework.
+
+Second, we implement functions for BLMA that can be applied in conjunction 
+with classical tests, such as t-test, Wilcoxon test, etc. We provide code 
+and examples for applying the intra-experiment analysis and bi-level analysis
+in conjunction with t-test and Wilcoxon test. The functions are 
+flexible and can be applied for one-sample, two-samples, one-tailed, 
+and two-tailed tests. By default, addCLT~\cite{nguyen2015novel,nguyen2015DANUBE,
+nguyen2016overcoming,nguyen2016tomas} is used to combine the p-values, 
+but users can change it to Fisher's method~\cite{fisher1925statistical}, 
+Stouffer's method~\cite{stouffer1949the}, minP~\cite{tippett1931methods}, or 
+maxP~\cite{wilkinson1951statistical}, according to their preference.
+
+Third, we implement functions for functional analysis and pathway analysis. 
+Users can choose to apply the BLMA framework in conjunction with any of the 
+4 methods: 
+Over-Representation Analysis (ORA)~\cite{Draghici:2003a,Tavazoie:1999}, 
+Gene Set Analysis (GSA)~\cite{Efron:2007}, Pathway Analysis with 
+Down-weighting of Overlapping Genes (PADOG)~\cite{Tarca2012down}, 
+and Impact Analyis (IA)~\cite{draghici2007systems}. When there is only 
+one dataset, the analysis is reduced to an intra-experiment analysis. 
+The functions are flexible and easy to run.
+
+Fourth, we implement functions for differential expression analysis. The 
+package uses the moderated t-test (limma package~\cite{limma}) as the test for 
+differential expression. In the intra-experiment analysis, the framework 
+splits a dataset into smaller datasets, performs the moderated t-test 
+on these split datasets, and then combines the results. In the 
+inter-experiment analysis, the framework combines the results obtained from 
+the intra-experiment analysis of individual datasets. The output is a list of 
+genes ranked according to how likely they are to be differentially expressed.
+
+\section{BLMA for classical hypothesis testing}
+Our bi-level meta-analysis framework is comprised of an intra-experiment and 
+an inter-experiment analysis. The reasoning for the intra-experiment is that 
+performing a statistical test on a large experiment is not as powerful as 
+splitting it into smaller studies and then combining them. 
+See Nguyen et al.~\cite{nguyen2015novel} for a detailed explanation.
+
+\subsection{Intra-experiment analysis}
+We design the function \emph{intraAnalysisClassic} in a way that it can be 
+used in conjunction with classical tests without any restriction. For example,
+intead of calling one-sample left-tailed t-test or Wilcoxon test, users can 
+call the function \emph{intraAnalysisClassic} with the same parameters. Below
+are examples of how to use t-test and Wilcoxon test:
+
+<<>>=
+# one-sample tests
+library(BLMA)
+set.seed(1)
+x <- rnorm(10, mean = 0)
+# one-sample left-tailed t-test
+t.test(x, mu=1, alternative = "less")$p.value
+# one-sample left-tailed intra-experiment analysis with t-test
+intraAnalysisClassic(x, func=t.test, mu=1, alternative = "less")
+# one-sample right-tailed t-test
+t.test(x, mu=1, alternative = "greater")$p.value
+# one-sample right-tailed intra-experiment analysis with t-test
+intraAnalysisClassic(x, func=t.test, mu=1, alternative = "greater")
+# one-sample two-tailed t-test
+t.test(x, mu=1)$p.value
+# one-sample two-tailed intra-experiment analysis with t-test
+intraAnalysisClassic(x, func=t.test, mu=1)
+# one-sample left-tailed Wilcoxon test
+wilcox.test(x, mu=1, alternative = "less")$p.value
+# one-sample left-tailed intra-experiment analysis with Wilcoxon test
+intraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "less")
+# one-sample right-tailed Wilcoxon test
+wilcox.test(x, mu=1, alternative = "greater")$p.value
+# one-sample right-tailed intra-experiment analysis with Wilcoxon test
+intraAnalysisClassic(x, func=wilcox.test, mu=1, alternative = "greater")
+# one-sample two-tailed Wilcoxon test
+wilcox.test(x, mu=1)$p.value
+# one-sample two-tailed intra-experiment analysis with Wilcoxon test
+intraAnalysisClassic(x, func=wilcox.test, mu=1)
+@
+
+Similarly, the intra-experiment analysis can be used with two-sample tests:
+
+<<>>=
+# two-sample tests
+set.seed(1)
+x <- rnorm(20, mean=0); y=rnorm(20, mean=1)
+# two-sample left-tailed t-test
+t.test(x,y,alternative="less")$p.value
+# two-sample left-tailed intra-experiment analysis with t-test
+intraAnalysisClassic(x, y, func=t.test, alternative = "less")
+# two-sample right-tailed t-test
+t.test(x,y,alternative="greater")$p.value
+# two-sample right-tailed intra-experiment analysis with t-test
+intraAnalysisClassic(x, y, func=t.test, alternative = "greater")
+# two-sample two-tailed t-test
+t.test(x,y)$p.value
+# two-sample two-tailed intra-experiment analysis with t-test
+intraAnalysisClassic(x, y, func=t.test)
+@
+
+\subsection{Bi-level meta-analysis}
+Some example code for bi-level meta-analysis:
+
+<<>>=
+# one-sample tests
+set.seed(1)
+l1 <- lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=1))
+l0 <- lapply(as.list(seq(3)),FUN=function (x) rnorm(n=10, mean=0))
+# one-sample right-tailed t-test
+lapply(l1, FUN=function(x) t.test(x, alternative="greater")$p.value)
+# combining the p-values of one-sample t-test:
+addCLT(unlist(lapply(l1, FUN=function(x) 
+    t.test(x, alternative="greater")$p.value)))
+#Bi-level meta-analysis with one-sample right-tailed t-test
+bilevelAnalysisClassic(x=l1, func=t.test, alternative="greater")
+# two-sample left-tailed t-test
+lapply(seq(l1), FUN=function(i,l1,l0) 
+    t.test(l1[[i]], l0[[i]], alternative="greater")$p.value, l1, l0)
+# combining the p-values of one-sample t-test:
+addCLT(unlist(lapply(seq(l1), FUN=function(i,l1,l0) 
+    t.test(l1[[i]], l0[[i]], alternative="greater")$p.value, l1, l0)))
+#Bi-level meta-analysis with two-sample right-tailed t-test
+bilevelAnalysisClassic(x=l1, y=l0, func=t.test, alternative="greater")
+#Bi-level meta-analysis with two-sample left-tailed t-test
+bilevelAnalysisClassic(x=l1, y=l0, func=t.test, alternative="less")
+@
+
+
+\section{BLMA for geneset/pathway analysis}
+For pathway/geneset analysis, the input of the framework is as follows. 
+First, we have multiple studies (datasets) of the same disease. Each dataset 
+consists of a group of control samples and a group of disease samples. 
+Second, we have a list of genesets or pathways from an existing 
+pathway database. 
+
+With the current implementation, the meta-analysis can be used in conjunction 
+with the following approaches: 
+Over-Representation Analysis (ORA)~\cite{Draghici:2003a}, 
+Gene Set Analysis (GSA)~\cite{Efron:2007}, Pathway Analysis with 
+Down-weighting of Overlapping Genes (PADOG)~\cite{Tarca2012down}, 
+and Impact Analyis (IA)~\cite{draghici2007systems}. By default, we use ORA as 
+the enrichment method, which is very fast and is able to integrate hundreds 
+of samples in a matter of seconds. Other enrichment methods are slower 
+than ORA, and we encourage users to take advantage of our parallel computing 
+by providing the number of processes via the \emph{mc.cores} parameter. 
+
+\subsection{Over-Representation Analysis (ORA)}
+
+We demonstrate this functionality using 4 acute myeloid leukemia (AML) 
+datasets: GSE17054 (9 samples)~\cite{majeti2009dysregulated}, 
+GSE57194 (12 samples)~\cite{abdul2010vitro}, 
+GSE33223 (30 samples)~\cite{bacher2012multilineage}, and 
+GSE42140 (31 samples). 
+The platform for all datasets is Affymetrix Human Genome U133 Plus 2.0 array. 
+Affymetrix \textit{CEL} files containing raw expression data were downloaded 
+from GEO for each dataset and processed using \textit{R} and 
+\textit{Bioconductor 2.13}. Quality control was performed using the 
+\textit{qc} method from the package 
+\textit{simpleaffy 2.38.0}~\cite{simpleaffy2.38.0}. 
+Pre-processing was performed on individual datasets using 
+the \textit{threestep} function from the package 
+\textit{affyPLM version 1.38.0}~\cite{bolstad2004low, bolstad2005quality, 
+brettschneider2008quality}. We calculate the expression value of a gene by 
+taking the median of the probesets that are mapped to the gene. Below is the 
+code for performing BLMA in conjunction with 
+ORA~\cite{Draghici:2003a,Tavazoie:1999} for the 4 datasets:
+
+<<>>=
+library(BLMA)
+# load KEGG pathways and create genesets
+x=loadKEGGPathways()
+gslist <- lapply(x$kpg,FUN=function(y){return (nodes(y));})
+gs.names <- x$kpn[names(gslist)]
+
+# load the 4 AML datasets
+dataSets <- c("GSE17054", "GSE57194", "GSE33223", "GSE42140")
+data(list=dataSets, package="BLMA")
+
+# prepare dataList and groupList
+names(dataSets) <- dataSets
+dataList <- lapply(dataSets, function(dataset) get(paste0("data_", dataset)))
+groupList <- lapply(dataSets, function(dataset) get(paste0("group_", dataset)))
+
+# perform bi-level meta-analysis in conjunction with ORA
+system.time(ORAComb <- bilevelAnalysisGeneset(gslist, gs.names, dataList, 
+                                              groupList, enrichment = "ORA"))
+#print the results
+options(digits=2)
+head(ORAComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
+@
+
+The running time for ORA is only 4 seconds. With a cutoff of 0.05, there are 
+4 significant pathways, among which the target pathway 
+\emph{Acute myeloid leukemia} is ranked $3^{rd}$ with a FDR-corrected 
+p-value $0.029$.
+
+\subsection{Gene Set Analysis (GSA)}
+
+We can also perform BLMA in conjunction with GSA~\cite{Efron:2007}. Since the 
+function GSA (from the GSA package) is not as fast as ORA, we recommend users 
+to take advantage of our parallel computing, by setting the number of cores 
+using the \emph{mc.cores} parameter:
+
+<<>>=
+# perform bi-level meta-analysis in conjunction with GSA
+system.time(GSAComb <- bilevelAnalysisGeneset(gslist, gs.names, dataList, 
+                                            groupList, enrichment = "GSA", 
+                                            nperms=200, random.seed = 1))
+#print the results
+options(digits=2)
+head(GSAComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
+@
+
+The running time of the meta-analysis in conjunction with GSA is approximately 
+1 minutes with 1 core. With a cutoff of FDR=0.05, there are 2 significant 
+pathways: \emph{Apoptosis} and \emph{Acute myeloid leukemia}
+. The target pathway  \emph{Acute myeloid leukemia} is ranked $2^{rd}$ with a 
+FDR-corrected p-value $0.023$.
+
+\subsection{Pathway Analysis with Down-weighting of Overlapping Genes (PADOG)}
+Below is an example code for running BLMA in conjunction with 
+PADOG~\cite{Tarca2012down}:
+
+<<>>=
+set.seed(1)
+system.time(PADOGComb <- bilevelAnalysisGeneset(gslist, gs.names, dataList, 
+                                    groupList, enrichment = "PADOG", NI=200))
+#print the results
+options(digits=2)
+head(PADOGComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
+@
+
+\subsection{Impact Analysis (IA)}
+Impact Analysis (IA) is a topology-based pathway analysis approach that is 
+able to take into consideration the interaction between genes~\cite{draghici2007systems}. 
+Pathway information can be provided in the format of 
+pathway graphs (e.g., graphNEL). Below is an example code for running BLMA 
+in conjunction with IA:
+
+<<>>=
+x <- loadKEGGPathways()  
+system.time(IAComb <- bilevelAnalysisPathway(x$kpg, x$kpn, dataList, groupList))
+#print the results
+options(digits=2)
+head(IAComb[, c("Name", "pBLMA", "pBLMA.fdr", "rBLMA")])
+@
+
+\section{BLMA for differential expression analysis}
+The package also provides functions for differential expression analysis across 
+multiple datasets. The input is a set of datasets from the same condition 
+while the output is a list of genes ranked according to their p-values. Here 
+we use the moderated t-test (limma package~\cite{limma}) as the test for 
+differential expression. As described above, BLMA performs the hypothesis 
+testing at two levels: an intra-experiment analysis and an inter-experiment 
+analysis. At the intra-experiment analysis, BLMA splits a dataset into smaller 
+datasets, performs the moderated t-test for individual genes, 
+and then combines the results obtained from these split datasets. 
+At the inter-experiment analysis, the processed p-values from 
+individual experiments are combined again. By default, the method addCLT is 
+used to combine the p-values, but users can set it to Fisher's, 
+Stouffer's method, minP, or maxP, according to their preference.
+
+\subsection{Intra-experiment analysis}
+The input for intra-experiment analysis is a dataset provided in 
+a data frame. The output consists of the following information: 
+i) logFC: log foldchanges, 
+ii) pLimma: p-values calculated by limma with out intra-experiment analysis, 
+iii) FDR-correct p-values of pLimma, 
+iv) pIntra: p-values obtained from the intra-experiment analysis, 
+and v) FDR-corrected p-values of pIntra. 
+The code for analyzing the dataset GSE33223 is as follows:
+
+<<>>=
+#perform intra-experiment analysis of the dataset GSE33223 using addCLT
+library(BLMA)
+data(GSE33223)
+system.time(X <- intraAnalysisGene(data_GSE33223, group_GSE33223))
+X <- X[order(X$pIntra), ]
+# top 10 genes
+head(X)
+# bottom 10 genes
+tail(X)
+
+#perform intra-experiment analysis of GSE33223 using Fisher's method
+system.time(Y <- intraAnalysisGene(data_GSE33223, group_GSE33223, 
+                      metaMethod=fisherMethod))
+Y = Y[order(Y$pIntra), ]
+# top 10 genes
+head(Y)
+# bottom 10 genes
+tail(Y)
+@
+
+\subsection{Bi-level analysis}
+For bi-level analysis, the input is a list of multiple datasets. 
+The ouput consists of the following information: i) pLimma: combined 
+p-values of limma p-values obtained from individual expriments, 
+ii) pLimma.fdr: FDR-correct p-values of pLimma, 
+iii) pBilevel: combined p-values of pIntra obtained from individual 
+experiments, and iv) pBilevel.fdr: FDR-corrected p-values of pBilevel. 
+We demonstrate the bi-level analysis using the 8 example datasets as follows:
+
+<<>>=
+system.time(Z <- bilevelAnalysisGene(dataList = dataList, groupList = groupList))
+
+# top 10 genes
+head(Z)
+# bottom 10 genes
+tail(Z)
+@
+
+
+% \subsection{Intra-experiment analysis versus t-test}
+% Our bi-level meta-analysis framework is comprised of an intra-experiment and 
+% an inter-experiment analysis. The reasoning for the intra-experiment is that 
+% performing a statistical test on a large experiment is not as powerful as 
+% splitting it into smaller studies and then combining them. We demonstrate 
+% this using the classical two-sample 
+% t-test~\cite{Gossett:1908, pearson1976biometrika}. 
+
+% In this simulation study, we use normal null (control) and alternative 
+% (disease) distributions that have the same variance but different means. 
+% Analogous to case-control analyses done in biological experiments, we randomly 
+% pick a set of samples  from the null distribution and a set of samples  from 
+% the alternative distribution and then compare the two sets. We compare  true 
+% positive rates (TPR) using two approaches, the two-sample t-test, and a 
+% combination of the t-test and our intra-experiment analysis method. For 
+% the intra-experiment analysis, we split the disease set into smaller sets of 
+% size $5$ to form multiple small studies. We then perform a right-tailed t-test 
+% to compare each newly created small disease set against the full control set. 
+% The resulting p-values are then combined using addCLT. We will show that a 
+% combination of the t-test and the intra-experiment analysis method is more 
+% powerful than t-test alone (right-tailed as well).
+% 
+% Given $n$ as the number of samples, we pick $n$ control samples from $H_0$ and 
+% $n$ disease samples from $H_A$. We then use the t-test and the 
+% intra-experiment analysis method (combined with t-test) to compare the two 
+% sets of samples. Each of the two approaches produces a p-value. We repeat 
+% the procedure 100 times to get 100 p-values for the t-test and 100 p-values 
+% for the intra-experiment analysis method. We then calculate the true positive 
+% rate (TPR) of each method as the number of p-values smaller than the 
+% threshold 0.01 divided by 100. 
+% 
+% <<>>=
+% library(BLMA)
+% M1=0;M2=0.1
+% x <- seq(-3, 3+M1, length=1000); hx <- dnorm(x, mean = M1, sd = 1)
+% y2 <- seq(-3, 3+M2, length=1000); hy2 <- dnorm(y2, mean = M2, sd = 1)
+% <<label=distribution,include=FALSE>>=
+% par(tcl=0.3,mgp=c(1.7,0.4,0),mar=c(3,3,2.5,1), xpd=TRUE)
+% plot(x,hx, main="Null and alternative distributions", xlab="x", 
+%      ylab="f(x)", cex.axis=1.3,  cex.lab=1.7, cex.main=2, type="l", lwd=2)
+% lines(y2, hy2, lwd=2, col="red")
+% @
+% 
+% <<>>=
+% set.seed(1)
+% threshold=0.01
+% M1=0;M2=0.1
+% Sizes=seq(5,100,by=5)
+% ttestTPR=IntraTPR=NULL
+% for (i in 1:length(Sizes)) {
+%   pttest=pIntra=NULL
+%   for (j in 1:100) {
+%     n=Sizes[i]
+%     sample1=rnorm(n,M1)
+%     sample2=rnorm(n,M2)
+%     
+%     pttest[j]=t.test(sample2, sample1, alternative = "greater")$p.value
+%     pIntra[j]=intraAnalysisClassic(x=sample2, y=sample1, func=t.test, 
+%                                    alternative="greater")
+%   }
+%   ttestTPR[i]=sum(pttest<=threshold)/100
+%   IntraTPR[i]=sum(pIntra<=threshold)/100
+% }
+% lottest <- loess(ttestTPR~Sizes,span=0.5)
+% lometa <- loess(IntraTPR~Sizes,span=0.5)
+% <<label=IntraTPR,include=FALSE>>=
+% par(tcl=0.3,mgp=c(1.7,0.4,0),mar=c(3,3,2.5,1), xpd=TRUE)
+% plot(Sizes,predict(lottest), ylim=c(0,max(ttestTPR,IntraTPR)), cex.main=2,
+%      main="t-test vs. intra-experiment", cex.axis=1.3,  cex.lab=1.7, type="l", 
+%      ylab="True positive rate", xlab="Number of samples", col="blue",lwd=2)
+% lines(Sizes,predict(lometa), col='red', lwd=2)
+% legend("topleft", legend=c("t-test","Intra-experiment"), 
+%        fill=c("blue","red"),cex=1.5)
+% @
+% 
+% \begin{figure}
+% \begin{center}
+% \resizebox{!}{4in}{
+% <<label=fig1,fig=TRUE,echo=FALSE>>=
+% <<distribution>>
+% @
+% }
+% \resizebox{!}{4in}{
+% <<label=fig2,fig=TRUE,echo=FALSE>>=
+% <<IntraTPR>>
+% @
+% }
+% \end{center}
+% \caption{The statistical power of the intra-experiment analysis}
+% \label{fig:MetaVsTtest}
+% \end{figure}
+% 
+% Figure~\ref{fig:MetaVsTtest} shows a comparison between the t-test and the 
+% intra-experiment analysis method. In the top panel of 
+% Figure~\ref{fig:MetaVsTtest}, the null distribution $H_0$ (black) is a 
+% standard normal distribution with mean $\mu_0=0$ and variance $\sigma_0^{2}=1$ 
+% while the alternative distribution $H_A$ (red) has the same variance but 
+% different mean, $\mu_A=0.1$. In this case, the alternative distribution is 
+% very close to the null distribution and it is hard for hypothesis testing 
+% methods to identify whether the samples were drawn from the null or from 
+% the alternative distribution.
+% 
+% The bottom panel of Figure~\ref{fig:MetaVsTtest} displays the true positive 
+% rate (TPR) of t-test and of the intra-experiment analysis method. 
+% The horizontal axis shows the number of samples while the vertical axis show 
+% the TPR. Interestingly, the TPR of the t-test barely increases when the number 
+% of samples increases - only from $2\%$ to $5\%$ when the number of samples 
+% increases from $20$ to $100$. Similarly, the TPR of the intra-experiment 
+% analysis method is also low but it \emph{increases rapidly} when the number 
+% of samples increases. For example, the TPR increases from $6\%$ with $20$ 
+% samples to $15\%$ with $100$ samples. The figure shows that the TPR of the 
+% intra-experiment analysis is approximately three times higher that that of 
+% t-test.
+% 
+% In summary, the intra-experiment analysis method (combined with the t-test) 
+% is more powerful than the t-test alone for comparative analysis. 
+% As shown in Nguyen et al.~\cite{nguyen2015novel}, the difference in performance 
+% between the two approaches increases when the difference between the null and 
+% alternative distributions decreases. Therefore, the intra-experiment analysis 
+% approach is especially powerful when there is only a small change in gene 
+% expression profile between the two phenotypes compared.
+% 
+% With the same setting, we illustrate the true positive rate (TPR) of the 
+% bi-level meta-analysis. In Figure~\ref{fig:BilevelTPR}, the left panel 
+% displays the null distribution (black) $H_0$ and the 
+% alternative distribution (red) $H_A$. The middle and right panels displays 
+% the TPR of the intra-experiment and inter-experiment analyses, respectively. 
+% In this case, the TPR is calculated as the number of p-values smaller than 
+% the threshold $0.01$ divided by 100. The TPR of the bi-level meta-analysis 
+% increases linearly with the number of studies. The TPR increases from $10\%$ 
+% with $2$ studies to almost $50\%$ with $20$ studies.
+% 
+% <<>>=
+% set.seed(1)
+% BilevelTPR = NULL
+% freq=seq(2,50,by=2)
+% threshold=0.01
+% size=20
+% for (i in 1:length(freq)) {
+%     pIntra=NULL
+%     for (j in 1:100) {
+%         l1 = lapply(as.list(seq(freq[i])),FUN=function (x) 
+%             rnorm(n=sample(10:100,1), mean=M1))
+%         l2 = lapply(as.list(seq(freq[i])),FUN=function (x) 
+%             rnorm(n=sample(10:100,1), mean=M2))
+%         pIntra[j]=bilevelAnalysisClassic(x=l2,y=l1,func=t.test, 
+%                                          alternative="greater")
+%     }
+%     BilevelTPR[i]=sum(pIntra<threshold)/100
+% }
+% <<label=BilevelTPR,include=FALSE>>=
+% par(tcl=0.3,mgp=c(1.7,0.4,0),mar=c(3,3,2.5,1), xpd=TRUE)
+% lo <- loess(BilevelTPR~freq,span=0.5)
+% plot(freq,predict(lo), ylim=c(0,1), main="Bi-level meta-analysis", 
+%      xlab="Number of studies", ylab="True positive rate", cex.axis=1.3,  
+%      cex.lab=1.7, cex.main=2, col="red", type="l", lwd=2)
+% @
+% 
+% \begin{figure} [t]
+% \begin{center}
+% \resizebox{!}{4in}{
+% <<label=fig3,fig=TRUE,echo=FALSE>>=
+% <<BilevelTPR>>
+% @
+% }
+% \end{center}
+% \caption{The statistical power of the bi-level meta-analysis}
+% \label{fig:BilevelTPR}
+% \end{figure}
+
+\bibliography{BLMA} 
+\bibliographystyle{unsrt_abbrv}
+\end{document}
+
+
+
+
+

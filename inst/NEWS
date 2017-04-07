@@ -1,0 +1,24 @@
+VERSION 1.0.0
+-------------
+
+Initial release of package BLMA includes:
+
+* bilevelAnalysisGeneset: a function to perform a bi-level meta-analysis in conjunction with geneset enrichment methods (ORA/GSA/PADOG) to integrate multiple gene expression datasets.
+
+* bilevelAnalysisPathway: a function to perform a bi-level meta-analysis conjunction with Impact Analysis to integrate multiple gene expression datasets.
+
+* intraAnalysisClassic: a function to perform an intra-experiment analysis in conjunction with any of the classical hypothesis testing methods, such as t-test, Wilcoxon test, etc.
+
+* bilevelAnalysisClassic: a function to perform a bi-level meta-analysis in conjunction with any of the classical hypothesis testing methods, such as t-test, Wilcoxon test, etc.
+
+* intraAnalysisGene: a function to perform an intra-experiment analysis in conjunction with the moderated t-test (limma package) for the purpose of differential expression analysis of a gene expression dataset
+
+* bilevelAnalysisGene: a function to perform a bi-level meta-analysis in conjunction with the moderate t-test (limma package) for the purpose of differential expression analysis of multiple gene expression datasets
+
+* loadKEGGPathways: this function loads KEGG pathways and names
+
+* addCLT: a function to combine independent studies using the average of p-values
+
+* fisherMethod: a function to combine independent p-values using the minus log product
+
+* stoufferMethod: a function to combine independent studies using the sum of p-values transformed into standard normal variables
