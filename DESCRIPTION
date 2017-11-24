@@ -2,13 +2,13 @@ Package: BLMA
 Date: 2017-01-16
 Type: Package
 Title: BLMA: A package for bi-level meta-analysis
-Version: 0.99.5
-Author: Tin Nguyen <tin@wayne.edu> and Sorin Draghici <sorin@wayne.edu>
-Maintainer: Tin Nguyen <tin@wayne.edu>
-Description: Suit of tools for bi-level meta-analysis. The package can be 
-	used in a wide range of applications, including general hypothesis 
-	testings, differential expression analysis, functional analysis, 
-	and pathway analysis. 
+Version: 1.3.0
+Author: Tin Nguyen <tinn@unr.edu> and Sorin Draghici <sorin@wayne.edu>
+Maintainer: Tin Nguyen <tinn@unr.edu>
+Description: Suit of tools for bi-level meta-analysis. The package can
+        be used in a wide range of applications, including general
+        hypothesis testings, differential expression analysis,
+        functional analysis, and pathway analysis.
 biocViews: GeneSetEnrichment, Pathways, DifferentialExpression,
         Microarray
 License: GPL (>=2)
@@ -17,4 +17,4 @@ Depends: ROntoTools, GSA, PADOG, limma, graph, stats, utils, parallel,
 Suggests: RUnit, BiocGenerics
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2017-02-19 07:09:21 UTC; tinnguyen
+Packaged: 2017-10-31 01:26:08 UTC; biocbuild
