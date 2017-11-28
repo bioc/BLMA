@@ -2,11 +2,7 @@ Package: BLMA
 Date: 2017-01-16
 Type: Package
 Title: BLMA: A package for bi-level meta-analysis
-<<<<<<< HEAD
-Version: 1.2.0
-=======
-Version: 1.3.1
->>>>>>> 8be490d... bug fix: GSA fails when input is not a matrix. Changed d to as.matrix(d) in function bilevelAnalysisGeneset
+Version: 1.3.2
 Author: Tin Nguyen <tin@wayne.edu> and Sorin Draghici <sorin@wayne.edu>
 Maintainer: Tin Nguyen <tin@wayne.edu>
 Description: Suit of tools for bi-level meta-analysis. The package can
