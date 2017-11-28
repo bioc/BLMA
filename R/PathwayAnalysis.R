@@ -409,7 +409,7 @@ bilevelAnalysisGeneset <- function (gslist, gs.names, dataList, groupList, split
                 
                 if (enrichment == "GSA") {
                     x <- g; x[x=="c"] <- 1; x[x=="d"] <- 2; x <- as.numeric(x)
-                    a <- capture.output(resgsa <- GSA(x = d, y = x, 
+                    a <- capture.output(resgsa <- GSA(x = as.matrix(d), y = x, 
                                  genesets = gslist, 
                                  genenames = rownames(data),
                                  resp.type = "Two class unpaired", 
