@@ -408,7 +408,7 @@ bilevelAnalysisGeneset <- function (gslist, gs.names, dataList, groupList, split
                 d <- data[,names(g)]
                 
                 if (enrichment == "GSA") {
-                    x <- g; x[x=="c"] <- 1; x[x=="d"] <- 2; x <- as.numeric(x)
+                    x <- as.character(g); x[x=="c"] <- 1; x[x=="d"] <- 2; x <- as.numeric(x)
                     a <- capture.output(resgsa <- GSA(x = as.matrix(d), y = x, 
                                  genesets = gslist, 
                                  genenames = rownames(data),
