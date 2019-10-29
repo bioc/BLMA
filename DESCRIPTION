@@ -2,7 +2,7 @@ Package: BLMA
 Date: 2017-01-16
 Type: Package
 Title: BLMA: A package for bi-level meta-analysis
-Version: 1.10.0
+Version: 1.11.0
 Author: Tin Nguyen <tin@wayne.edu> and Sorin Draghici <sorin@wayne.edu>
 Maintainer: Tin Nguyen <tin@wayne.edu>
 Description: Suit of tools for bi-level meta-analysis. The package can
