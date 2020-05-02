@@ -23,7 +23,7 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \title{BLMA: A package for bi-level meta-analysis}
-\author{Tin Nguyen and Sorin Draghici\\
+\author{Tin Nguyen, Hung Nguyen and Sorin Draghici\\
 Department of Computer Science, Wayne State University, Detroit MI 48202}
 \maketitle
 
@@ -373,6 +373,24 @@ head(Z)
 tail(Z)
 @
 
+\section{BLMA for network-based integrative analysis}
+
+BLMA also provides a function to estimate the effect sizes of genes across all studies (standardized mean difference) and their p-values. The function also performs classical hypothesis testing and meta-analysis to combine p-values for differential expressed genes across all studies. These statistics can be used as input of both geneset- and network-based analysis \cite{nguyen2020nbia}.
+
+<<>>=
+allGenes <- Reduce(intersect, lapply(dataList, rownames))
+system.time(Z <- getStatistics(allGenes, dataList = dataList, groupList = groupList))
+
+# top 10 genes
+head(Z)
+# bottom 10 genes
+tail(Z)
+@
+
+For the details of each column, please consult the documentation of getStatistics function.
+<<>>=
+?getStatistics
+@
 
 % \subsection{Intra-experiment analysis versus t-test}
 % Our bi-level meta-analysis framework is comprised of an intra-experiment and 

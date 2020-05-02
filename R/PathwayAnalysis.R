@@ -40,6 +40,8 @@ loadKEGGPathways <- function (organism="hsa", updateCache=FALSE) {
     kpg <- setNodeWeights(kpg, defaultWeight = 1)
     suppressMessages(kpn <- keggPathwayNames(organism, updateCache = FALSE, verbose = FALSE))
     kpn <- kpn[names(kpg)]
+    kpn <- kpn[!is.na(kpn)]
+    kpg <- kpg[names(kpn)]
 
     list(kpg=kpg, kpn=kpn)
 }
@@ -163,6 +165,7 @@ pORACalc <- function(geneSet, DEGenes,measuredGenes, minSize =0) {
 #' @import Biobase
 #' @import utils
 #' @import stats
+#' @import methods
 #' @export
 bilevelAnalysisPathway <- function (kpg, kpn, dataList, groupList, splitSize=5, metaMethod=addCLT, pCutoff=0.05, percent=0.05, mc.cores=1, nboot=200, seed=1) {
     if (splitSize < 3) {
