@@ -46,8 +46,17 @@ loadKEGGPathways <- function (organism="hsa", updateCache=FALSE) {
     list(kpg=kpg, kpn=kpn)
 }
 
+#' @title Over-representation Analysis
+#' @description Calculate p-value for over-representation Analysis
+#' @param geneSet a vector of gene names belong to the geneset
+#' @param DEGenes a vector of differential expressed genes
+#' @param measuredGenes a vector of all genes in the analysis
+#' @param minSize the minimum number of DE genes in the geneSet
+#' @return 
+#' p-value
 #' @import stats
-pORACalc <- function(geneSet, DEGenes,measuredGenes, minSize =0) {
+#' @export
+pORACalc <- function(geneSet, DEGenes, measuredGenes, minSize =0) {
     #minSize is the minimum number of DE genes in the geneSet
     universe <- measuredGenes
     white <- DEGenes
