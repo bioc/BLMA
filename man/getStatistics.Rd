@@ -67,6 +67,44 @@ allGenes <- Reduce(intersect, lapply(dataList, rownames))
 geneStat <- getStatistics(allGenes, dataList, groupList)
 head(geneStat)
 
+# perform pathway analysis
+library(ROntoTools)
+# get gene network
+kpg <- loadKEGGPathways()$kpg
+# get gene network name
+kpn <- loadKEGGPathways()$kpn
+# get geneset
+gslist <- lapply(kpg,function(y) nodes(y))
+
+# get differential expressed genes
+DEGenes.Left <- rownames(geneStat)[geneStat$pLeft < 0.05 & geneStat$ES.pLeft < 0.05]
+DEGenes.Right <- rownames(geneStat)[geneStat$pRight < 0.05 & geneStat$ES.pRight < 0.05]
+
+DEGenes <- union(DEGenes.Left, DEGenes.Right)
+
+# perform pathway analysis with ORA
+oraRes <- lapply(gslist, function(gs){
+    pORACalc(geneSet = gs, DEGenes = DEGenes, measuredGenes = rownames(geneStat))
+})
+oraRes <- data.frame(p.value = unlist(oraRes), pathway = names(oraRes))
+rownames(oraRes)  <- kpn[rownames(oraRes)]
+
+# print results
+print(head(oraRes))
+
+# perfrom pathway analysis with Pathway-Express from ROntoTools
+ES <- geneStat[DEGenes, "ES"]
+names(ES) <- DEGenes
+
+peRes = pe(x = ES, graphs = kpg, ref = allGenes, nboot = 1000, seed=1)
+
+peRes.Summary <- Summary(peRes, comb.pv.func = fisherMethod)
+peRes.Summary[, ncol(peRes.Summary) + 1] <- rownames(peRes.Summary)
+rownames(peRes.Summary) <- kpn[rownames(peRes.Summary)]
+colnames(peRes.Summary)[ncol(peRes.Summary)] = "pathway"
+
+# print results
+print(head(peRes.Summary))
 
 }
 \references{

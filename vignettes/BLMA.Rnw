@@ -422,7 +422,7 @@ print(head(oraRes))
 ES <- geneStat[DEGenes, "ES"]
 names(ES) <- DEGenes
 
-peRes = pe(x = ES, graphs = kpg, ref = allGenes, nboot = 1000, seed=1)
+peRes = pe(x = ES, graphs = kpg, ref = allGenes, nboot = 1000, seed=1, verbose = F)
 
 peRes.Summary <- Summary(peRes, comb.pv.func = fisherMethod)
 peRes.Summary[, ncol(peRes.Summary) + 1] <- rownames(peRes.Summary)
