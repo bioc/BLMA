@@ -2,7 +2,7 @@ Package: BLMA
 Date: 2020-06-22
 Type: Package
 Title: BLMA: A package for bi-level meta-analysis
-Version: 1.22.0
+Version: 1.23.0
 Author: Tin Nguyen <tinn@unr.edu>, Hung Nguyen <hungnp@nevada.unr.edu>, and Sorin Draghici <sorin@wayne.edu>
 Maintainer: Hung Nguyen <hungnp@nevada.unr.edu>
 Description: Suit of tools for bi-level meta-analysis. The package can
