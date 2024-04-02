@@ -3,8 +3,8 @@ Date: 2020-06-22
 Type: Package
 Title: BLMA: A package for bi-level meta-analysis
 Version: 1.27.0
-Author: Tin Nguyen <tinn@unr.edu>, Hung Nguyen <hungnp@nevada.unr.edu>, and Sorin Draghici <sorin@wayne.edu>
-Maintainer: Hung Nguyen <hungnp@nevada.unr.edu>
+Author: Tin Nguyen <tinn@auburn.edu>, Hung Nguyen <pzb00047@auburn.edu>, and Sorin Draghici <sorin@wayne.edu>
+Maintainer: Van-Dung Pham <dvp0001@auburn.edu>
 Description: Suit of tools for bi-level meta-analysis. The package can
         be used in a wide range of applications, including general
         hypothesis testings, differential expression analysis,
@@ -15,5 +15,5 @@ License: GPL (>=2)
 Depends: ROntoTools, GSA, PADOG, limma, graph, stats, utils, parallel,
         Biobase, metafor, methods
 Suggests: RUnit, BiocGenerics
-RoxygenNote: 7.1.0
+RoxygenNote: 7.3.1
 NeedsCompilation: no
